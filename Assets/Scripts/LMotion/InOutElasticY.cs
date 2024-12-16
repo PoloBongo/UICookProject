@@ -9,6 +9,10 @@ public class InOutElasticY : MonoBehaviour
     [SerializeField] private float endPositionY;
 
     private bool alreadyUse = false;
+    
+        
+    public delegate void OnFinishMotion(bool canClick);
+    public static event OnFinishMotion OnFinishMotionElastic;
 
     public void StartAnimationBounce()
     {
@@ -19,6 +23,7 @@ public class InOutElasticY : MonoBehaviour
                 new Vector2(alreadyUse ? startPositionY : endPositionY, 0), 
                 2f)
             .WithEase(Ease.OutElastic)
+            .WithOnComplete((() => { OnFinishMotionElastic?.Invoke(true); }))
             .BindToAnchoredPosition(motionRectTransform);
         alreadyUse = !alreadyUse;
     }

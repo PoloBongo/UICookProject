@@ -29,14 +29,13 @@ public class RaycastCloset : MonoBehaviour
     {
         if (isClicked)
         {
+            curClosetPickedObj.layer = LayerMask.NameToLayer("Default");
             ResetStatsObj();
         }
         if (!curClosetPickedObj)
         {
             curClosetPickedObj = hitInfo.collider.gameObject;
             curPickedCanvas = hitInfo.collider.gameObject.GetComponentInChildren<Canvas>(true).gameObject;
-            Debug.Log(curPickedCanvas.name);
-            Debug.Log(curClosetPickedObj.name);
         }
     }
 

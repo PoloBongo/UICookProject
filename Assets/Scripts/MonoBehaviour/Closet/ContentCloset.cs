@@ -21,12 +21,26 @@ public class ContentCloset : MonoBehaviour
     [Header("ContentCloset")]
     [SerializeField] private List<ContentClosetIngredient> ingredients;
     [SerializeField] private List<ContentClosetIngredientSprite> rawImages;
+    [SerializeField] private GameObject placard;
+    [SerializeField] private GameObject panelInfoItem;
 
     private GameObject selectedCheck;
     private GameObject currentObj;
+    private bool canClick = true;
     
     public delegate void OnHandClick(string buttonName, GameObject currentObj = null);
     public static event OnHandClick OnSelectedHand;
+    
+    private void OnEnable()
+    {
+        canClick = true;
+        InOutElasticY.OnFinishMotionElastic += HandleCheckCanClick;
+    }
+
+    private void HandleCheckCanClick(bool _canClick)
+    {
+        canClick = _canClick;
+    }
     
     
     private void Start()
@@ -71,8 +85,19 @@ public class ContentCloset : MonoBehaviour
     
     public void HiddeCheckIcon(GameObject newSelectedCheck)
     {
-        newSelectedCheck.SetActive(true);
+        if (canClick)
+        {
+            if (selectedCheck) selectedCheck.SetActive(false);
+            newSelectedCheck.SetActive(panelInfoItem.activeSelf);
+            selectedCheck = newSelectedCheck;
+            canClick = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        InOutElasticY.OnFinishMotionElastic -= HandleCheckCanClick;
         if (selectedCheck) selectedCheck.SetActive(false);
-        selectedCheck = newSelectedCheck;
+        placard.layer = LayerMask.NameToLayer("Closet");
     }
 }
