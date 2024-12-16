@@ -57,7 +57,7 @@ Material:
     m_Floats:
     - _Intensity: 4
     - _MaxIntensity: 10
-    - _MinIntensity: 0.1
+    - _MinIntensity: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2460310093057327646}
   - component: {fileID: 8678449133138923148}
   - component: {fileID: 1305473820719674538}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: aubergine_leaf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,8 +99,8 @@ GameObject:
   - component: {fileID: 4115173401109374610}
   - component: {fileID: 3440138980496242584}
   - component: {fileID: 3923585133983540476}
-  m_Layer: 6
-  m_Name: aubergine
+  m_Layer: 7
+  m_Name: EggPlant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -115,7 +115,7 @@ Transform:
   m_GameObject: {fileID: 3900775012517803629}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -193,7 +193,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -223,6 +223,10 @@ PrefabInstance:
     - target: {fileID: 1266273523842364568, guid: b4e7a69a2c12587469d9bb3e11dcf20d, type: 3}
       propertyPath: m_Name
       value: UIHand
+      objectReference: {fileID: 0}
+    - target: {fileID: 3722113824697331448, guid: b4e7a69a2c12587469d9bb3e11dcf20d, type: 3}
+      propertyPath: m_Name
+      value: RightHand
       objectReference: {fileID: 0}
     - target: {fileID: 8971246123519861901, guid: b4e7a69a2c12587469d9bb3e11dcf20d, type: 3}
       propertyPath: m_Pivot.x

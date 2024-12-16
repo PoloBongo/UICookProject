@@ -24,11 +24,13 @@ public class RaycastPickable : MonoBehaviour
     private void OnEnable()
     {
         ButtonClickPickable.OnButtonClick += HandleButtonClick;
+        ContentCloset.OnSelectedHand += HandleButtonClick;
     }
 
     private void OnDisable()
     {
         ButtonClickPickable.OnButtonClick -= HandleButtonClick;
+        ContentCloset.OnSelectedHand -= HandleButtonClick;
     }
 
     private bool CheckChildInHand()
@@ -44,8 +46,12 @@ public class RaycastPickable : MonoBehaviour
         return false;
     }
 
-    private void HandleButtonClick(string _buttonName)
+    private void HandleButtonClick(string _buttonName, GameObject _curPickedObj = null)
     {
+        if (_curPickedObj)
+        {
+            curPickedObj = Instantiate(_curPickedObj);
+        }
         switch (_buttonName)
         {
             case "LeftHand":

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class ButtonClickPickable : MonoBehaviour
 {
     [SerializeField] private GameObject canvasUI;
-    public delegate void OnClick(string buttonName);
+    public delegate void OnClick(string buttonName, GameObject pickedObject = null);
     public static event OnClick OnButtonClick;
     void Start () {
         Button btn = GetComponent<Button>();
