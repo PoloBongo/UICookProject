@@ -99,9 +99,8 @@ public class RaycastPickable : MonoBehaviour
     {
         Vector2 mousePosition = Input.mousePosition;
         Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-        Vector3 camPos = Camera.main.transform.position;
     
-        PickableLayerUpdate(camPos, ray);
+        PickableLayerUpdate(ray);
         
         if (curPickedCanvas && Vector3.Distance(transform.position, curPickedObj.transform.position) > 5)
         {
@@ -131,7 +130,7 @@ public class RaycastPickable : MonoBehaviour
         curPickedCanvas = null;
     }
 
-    private void PickableLayerUpdate(Vector3 camPos, Ray ray)
+    private void PickableLayerUpdate(Ray ray)
     {
         RaycastHit hitInfo;
         //Debug.DrawRay(camPos, ray.direction.normalized * 10f, Color.yellow);

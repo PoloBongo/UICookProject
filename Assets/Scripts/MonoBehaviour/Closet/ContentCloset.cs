@@ -21,11 +21,13 @@ public class ContentCloset : MonoBehaviour
     [Header("ContentCloset")]
     [SerializeField] private List<ContentClosetIngredient> ingredients;
     [SerializeField] private List<ContentClosetIngredientSprite> rawImages;
+
+    private GameObject selectedCheck;
+    private GameObject currentObj;
     
     public delegate void OnHandClick(string buttonName, GameObject currentObj = null);
     public static event OnHandClick OnSelectedHand;
     
-    private GameObject currentObj;
     
     private void Start()
     {
@@ -49,16 +51,28 @@ public class ContentCloset : MonoBehaviour
 
     public void SetCurrentObj(RawImage image)
     {
+        currentObj = null;
         for (int i = 0; i < ingredients.Count; i++)
         {
             for (int j = 0; j < ingredients[i].ingredient.Count; j++)
             {
-                Debug.Log(ingredients[i].ingredient[j].prefab.name + "  prefab name + " + image.texture.name + " texture name");
                 if (ingredients[i].ingredient[j].prefab.name == image.texture.name)
                 {
                     currentObj = ingredients[i].ingredient[j].prefab;
                 }
             }
         }
+    }
+
+    public void HiddeCloset()
+    {
+        this.gameObject.SetActive(false);
+    }
+    
+    public void HiddeCheckIcon(GameObject newSelectedCheck)
+    {
+        newSelectedCheck.SetActive(true);
+        if (selectedCheck) selectedCheck.SetActive(false);
+        selectedCheck = newSelectedCheck;
     }
 }
