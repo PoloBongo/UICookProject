@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,7 @@ public class ContentCloset : MonoBehaviour
     private GameObject selectedCheck;
     private GameObject currentObj;
     private bool canClick = true;
+    private string stockTextDescrpTemp;
     
     public delegate void OnHandClick(string buttonName, GameObject currentObj = null);
     public static event OnHandClick OnSelectedHand;
@@ -73,6 +75,7 @@ public class ContentCloset : MonoBehaviour
                 if (ingredients[i].ingredient[j].prefab.name == image.texture.name)
                 {
                     currentObj = ingredients[i].ingredient[j].prefab;
+                    stockTextDescrpTemp = ingredients[i].ingredient[j].description;
                 }
             }
         }
@@ -99,5 +102,12 @@ public class ContentCloset : MonoBehaviour
         InOutElasticY.OnFinishMotionElastic -= HandleCheckCanClick;
         if (selectedCheck) selectedCheck.SetActive(false);
         placard.layer = LayerMask.NameToLayer("Closet");
+    }
+
+    public void SetTextDescriptionItem()
+    {
+        TMP_Text text = panelInfoItem.GetComponentInChildren<TMP_Text>();
+        if (!text) Debug.LogError("text de l'item description introuvable");
+        text.text = stockTextDescrpTemp;
     }
 }
