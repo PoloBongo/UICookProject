@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3451077329607822420}
   - component: {fileID: 3950642109875659117}
   - component: {fileID: 3679340094230780910}
+  - component: {fileID: -6558093351707072751}
   m_Layer: 6
   m_Name: fish
   m_TagString: Untagged
@@ -124,3 +125,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 253499c25cbc2a14a89e97e0712c27fe, type: 2}
   defaultMaterial: {fileID: 2100000, guid: b3737475b3717db4cabb07581e28a3bf, type: 2}
+--- !u!114 &-6558093351707072751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6928500912735543264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d7da8a3986523488e760727f8f7a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientCreator: {fileID: 11400000, guid: 49f069efe1ccdf847a8a9ba39e892de9, type: 2}

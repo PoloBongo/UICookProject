@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1182275716867520712}
   - component: {fileID: 8481946260399903744}
   - component: {fileID: 7493372466099348875}
+  - component: {fileID: 6203479423087070587}
   m_Layer: 6
   m_Name: beef_Steak_Raw
   m_TagString: Untagged
@@ -125,6 +126,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 253499c25cbc2a14a89e97e0712c27fe, type: 2}
   defaultMaterial: {fileID: 2100000, guid: b3737475b3717db4cabb07581e28a3bf, type: 2}
+--- !u!114 &6203479423087070587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902271098695974524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d7da8a3986523488e760727f8f7a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientCreator: {fileID: 11400000, guid: 4b918bb47df017b41b31883441b9d8ba, type: 2}
 --- !u!1001 &8047747132158849819
 PrefabInstance:
   m_ObjectHideFlags: 0

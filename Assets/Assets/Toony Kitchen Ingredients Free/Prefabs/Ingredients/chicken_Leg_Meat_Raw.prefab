@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 2625141335629049988}
   - component: {fileID: 5947538864363159509}
   - component: {fileID: 4996774490375931740}
+  - component: {fileID: 5188003788861150271}
   m_Layer: 6
   m_Name: chicken_Leg_Meat_Raw
   m_TagString: Untagged
@@ -211,3 +212,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 253499c25cbc2a14a89e97e0712c27fe, type: 2}
   defaultMaterial: {fileID: 2100000, guid: b3737475b3717db4cabb07581e28a3bf, type: 2}
+--- !u!114 &5188003788861150271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9058849866393672627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d7da8a3986523488e760727f8f7a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientCreator: {fileID: 11400000, guid: 9b5a4f04ee303744daeaaf5f3cfd1fbc, type: 2}

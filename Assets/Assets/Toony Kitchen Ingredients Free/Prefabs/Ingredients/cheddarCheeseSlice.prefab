@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2174763891624872914}
   - component: {fileID: -7158960815802811689}
   - component: {fileID: -1893998286653357883}
+  - component: {fileID: 3983537755761009423}
   m_Layer: 6
   m_Name: cheddarCheeseSlice
   m_TagString: Untagged
@@ -124,3 +125,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 253499c25cbc2a14a89e97e0712c27fe, type: 2}
   defaultMaterial: {fileID: 2100000, guid: b3737475b3717db4cabb07581e28a3bf, type: 2}
+--- !u!114 &3983537755761009423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302116531988806050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d7da8a3986523488e760727f8f7a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientCreator: {fileID: 11400000, guid: 41ab0f0ab844566459b6cafb90a5832b, type: 2}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2460310093057327646}
   - component: {fileID: 8678449133138923148}
   - component: {fileID: 1305473820719674538}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: aubergine_leaf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,8 @@ GameObject:
   - component: {fileID: 4115173401109374610}
   - component: {fileID: 3440138980496242584}
   - component: {fileID: 3923585133983540476}
-  m_Layer: 7
+  - component: {fileID: 8831057431554862863}
+  m_Layer: 6
   m_Name: EggPlant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +194,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -212,6 +213,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 2a8c71d91a7da464fa9ecf8f84995843, type: 2}
   defaultMaterial: {fileID: 2100000, guid: b3737475b3717db4cabb07581e28a3bf, type: 2}
+--- !u!114 &8831057431554862863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3900775012517803629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d7da8a3986523488e760727f8f7a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientCreator: {fileID: 11400000, guid: 8c21f7626c6c69446bc9362ea43e9452, type: 2}
 --- !u!1001 &9107550928761937407
 PrefabInstance:
   m_ObjectHideFlags: 0

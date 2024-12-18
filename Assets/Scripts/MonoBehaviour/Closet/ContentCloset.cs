@@ -8,6 +8,8 @@ using UnityEngine.UI;
 class ContentClosetIngredient
 {
     public List<IngredientCreator> ingredient;
+    public int maxSlot;
+    public int actualSlotUsed;
 }
 
 
@@ -24,6 +26,10 @@ public class ContentCloset : MonoBehaviour
     [SerializeField] private List<ContentClosetIngredientSprite> rawImages;
     [SerializeField] private GameObject placard;
     [SerializeField] private GameObject panelInfoItem;
+    
+    [Header("Camera hands")]
+    [SerializeField] private Camera leftHandCamera;
+    [SerializeField] private Camera rightHandCamera;
 
     private GameObject selectedCheck;
     private GameObject currentObj;
@@ -32,6 +38,8 @@ public class ContentCloset : MonoBehaviour
     private bool canClick = true;
     private bool switchActivePanelInfo = false;
     private string stockTextDescrpTemp;
+
+    private GameObject stockGameObjectForDrop;
     
     public delegate void OnHandClick(string buttonName, GameObject currentObj = null);
     public static event OnHandClick OnSelectedHand;
@@ -63,8 +71,48 @@ public class ContentCloset : MonoBehaviour
             {
                 if (ingredients[i].ingredient[j])
                 {
+                    ingredients[i].maxSlot = ingredients[i].ingredient.Count;
+                    ingredients[i].actualSlotUsed = j+1;
                     rawImages[i].rawImage[j].gameObject.SetActive(true);
                     rawImages[i].rawImage[j].texture = ingredients[i].ingredient[j].icon;
+                }
+            }
+        }
+    }
+    
+    private bool CheckChildInHand(int _chooseHand)
+    {
+        if (_chooseHand == -1) return false;
+
+        Camera handCamera = _chooseHand == 0 ? leftHandCamera : _chooseHand == 1 ? rightHandCamera : null;
+    
+        if (handCamera != null && handCamera.transform.childCount > 0)
+        {
+            stockGameObjectForDrop = handCamera.transform.GetChild(0).gameObject;
+            return true;
+        }
+        return false;
+    }
+
+    public void DropItemInCloset(int _chooseHand)
+    {
+        if (CheckChildInHand(_chooseHand))
+        {
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                if (ingredients[i].actualSlotUsed != ingredients[i].maxSlot)
+                {
+                    for (int j = 0; j < ingredients[i].ingredient.Count; j++)
+                    {
+                        if (!ingredients[i].ingredient[j])
+                        {
+                            rawImages[i].rawImage[j].gameObject.SetActive(true);
+                            rawImages[i].rawImage[j].texture = stockGameObjectForDrop.GetComponent<Item>().GetIngredientCreator().icon;
+                            ingredients[i].ingredient[j] = stockGameObjectForDrop.GetComponent<Item>().GetIngredientCreator();
+                            ingredients[i].actualSlotUsed++;
+                            Destroy(stockGameObjectForDrop);
+                        }
+                    }
                 }
             }
         }
@@ -76,6 +124,7 @@ public class ContentCloset : MonoBehaviour
         {
             OnSelectedHand?.Invoke(handName, currentObj);
             RemoveItemFromCloset();
+            ShowCheckIcon(selectedCheck);
         }
     }
 
@@ -99,9 +148,9 @@ public class ContentCloset : MonoBehaviour
 
     private void RemoveItemFromCloset()
     {
-        ingredients[currentCategoryIndex].ingredient.RemoveAt(currentItemIndex);
+        ingredients[currentCategoryIndex].ingredient[currentItemIndex] = null;
         rawImages[currentCategoryIndex].rawImage[currentItemIndex].gameObject.SetActive(false);
-        rawImages[currentCategoryIndex].rawImage.RemoveAt(currentItemIndex);
+        ingredients[currentCategoryIndex].actualSlotUsed--;
         InitItemPanel();
     }
 
@@ -114,13 +163,18 @@ public class ContentCloset : MonoBehaviour
     {
         if (canClick)
         {
-            switchActivePanelInfo = !switchActivePanelInfo;
-            if (selectedCheck) selectedCheck.SetActive(false);
-            panelInfoItem.SetActive(switchActivePanelInfo);
-            selectedCheck = newSelectedCheck;
-            OnShowIconCheck?.Invoke(newSelectedCheck, canClick, panelInfoItem.activeSelf);
-            canClick = false;
+            ShowCheckIcon(newSelectedCheck);
         }
+    }
+
+    private void ShowCheckIcon(GameObject _newSelectedCheck)
+    {
+        switchActivePanelInfo = !switchActivePanelInfo;
+        if (selectedCheck) selectedCheck.SetActive(false);
+        panelInfoItem.SetActive(switchActivePanelInfo);
+        selectedCheck = _newSelectedCheck;
+        OnShowIconCheck?.Invoke(_newSelectedCheck, canClick, panelInfoItem.activeSelf);
+        canClick = false;
     }
 
     private void OnDisable()

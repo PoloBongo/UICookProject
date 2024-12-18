@@ -1200,7 +1200,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "Smoothness",
     "m_StageCapability": 2,
-    "m_Value": 1.0,
+    "m_Value": 0.5,
     "m_DefaultValue": 0.5,
     "m_Labels": []
 }
@@ -2005,8 +2005,8 @@
     "m_ObjectId": "bb0912c4c4bb435588f2173865add61b",
     "m_Title": "Glow",
     "m_Position": {
-        "x": -2674.400146484375,
-        "y": 28.79981231689453
+        "x": -2674.0,
+        "y": 29.99991226196289
     }
 }
 
