@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -14,8 +15,8 @@ public class RaycastContainer : MonoBehaviour
     [SerializeField] private Camera leftHandCamera;
     [SerializeField] private Camera rightHandCamera;
     
-    private StockVariationMaterial stockMaterial;
-    private MeshRenderer hitRenderer;
+    private Dictionary<MeshRenderer, StockVariationMaterial> rendererMaterials = new Dictionary<MeshRenderer, StockVariationMaterial>();
+    private List<MeshRenderer> hitRenderers = new List<MeshRenderer>();
     
     private void OnEnable()
     {
@@ -88,7 +89,6 @@ public class RaycastContainer : MonoBehaviour
             {
                 continue;
             }
-            Debug.Log(_obj.transform.gameObject.name + " is " + _layer);
             SwitchLayer(_obj.transform.GetChild(i).gameObject, _layer);
         }
     }
@@ -102,6 +102,7 @@ public class RaycastContainer : MonoBehaviour
     {
         _pickedObj.transform.parent = _parent.transform;
         _pickedObj.transform.localPosition = new Vector3(0, 0, 0);
+        _pickedObj.transform.localPosition = new Vector3(0, 0.763f, 0);
     }
     
     private void SwitchParent(GameObject _parent, GameObject _pickedObj)
@@ -124,9 +125,9 @@ public class RaycastContainer : MonoBehaviour
         }
     }
 
-    private void StockPickedObj(RaycastHit hitInfo, bool isClicked = false)
+    private void StockPickedObj(RaycastHit hitInfo, bool _isClicked = false)
     {
-        if (isClicked)
+        if (_isClicked)
         {
             ResetStatsObj();
         }
@@ -152,7 +153,6 @@ public class RaycastContainer : MonoBehaviour
         if (Physics.Raycast(ray, out hitInfo, 10f, LayerMask.GetMask("Container")))
         {
             SwitchMaterialWhenMouseIsHover(hitInfo);
-
             // stock l'obj ciblé
             StockPickedObj(hitInfo);
 
@@ -161,7 +161,7 @@ public class RaycastContainer : MonoBehaviour
                 StockPickedObj(hitInfo, true);
                 if (curPickedCanvas)
                 {
-                    curPickedCanvas.transform.LookAt(new Vector3(transform.position.x, curPickedCanvas.transform.position.y, transform.position.z));
+                    //curPickedCanvas.transform.LookAt(new Vector3(transform.position.x, curPickedCanvas.transform.position.y, transform.position.z));
                     curPickedCanvas.SetActive(true);
                 }
             }
@@ -174,20 +174,29 @@ public class RaycastContainer : MonoBehaviour
 
     private void SwitchMaterialWhenMouseIsHover(RaycastHit hitInfo)
     {
-        hitRenderer = hitInfo.transform.gameObject.GetComponent<MeshRenderer>();
-        if (hitRenderer)
+        MeshRenderer[] renderers = hitInfo.transform.gameObject.GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer meshRenderer in renderers)
         {
-            // change le material
-            stockMaterial = hitInfo.transform.gameObject.GetComponent<StockVariationMaterial>();
-            hitRenderer.material = stockMaterial.GetHoverMaterial();
+            StockVariationMaterial stockMaterial = meshRenderer.gameObject.GetComponent<StockVariationMaterial>();
+            if (stockMaterial)
+            {
+                hitRenderers.Add(meshRenderer);
+                rendererMaterials[meshRenderer] = stockMaterial; 
+                meshRenderer.material = stockMaterial.GetHoverMaterial();
+            }
         }
     }
 
     private void ResetMaterialWhenMouseIsNotHover()
     {
-        if (hitRenderer)
+        foreach (MeshRenderer meshRenderer in hitRenderers)
         {
-            hitRenderer.material = stockMaterial.GetDefaultMaterial();
-        }
+            if (rendererMaterials.ContainsKey(meshRenderer))
+            {
+                meshRenderer.material = rendererMaterials[meshRenderer].GetDefaultMaterial();
+            }
+        } 
+        hitRenderers.Clear(); 
+        rendererMaterials.Clear();
     }
 }
