@@ -27,11 +27,17 @@ public class ContentCloset : MonoBehaviour
 
     private GameObject selectedCheck;
     private GameObject currentObj;
+    private int currentCategoryIndex;
+    private int currentItemIndex;
     private bool canClick = true;
+    private bool switchActivePanelInfo = false;
     private string stockTextDescrpTemp;
     
     public delegate void OnHandClick(string buttonName, GameObject currentObj = null);
     public static event OnHandClick OnSelectedHand;
+    
+    public delegate void OnShowIconCheckEvent(GameObject newSelectedCheck, bool isShow, bool isShowIcon);
+    public static event OnShowIconCheckEvent OnShowIconCheck;
     
     private void OnEnable()
     {
@@ -43,16 +49,23 @@ public class ContentCloset : MonoBehaviour
     {
         canClick = _canClick;
     }
-    
-    
+
     private void Start()
+    {
+        InitItemPanel();
+    }
+
+    private void InitItemPanel()
     {
         for (int i = 0; i < ingredients.Count; i++)
         {
             for (int j = 0; j < ingredients[i].ingredient.Count; j++)
             {
-                rawImages[i].rawImage[j].gameObject.SetActive(true);
-                rawImages[i].rawImage[j].texture = ingredients[i].ingredient[j].icon;
+                if (ingredients[i].ingredient[j])
+                {
+                    rawImages[i].rawImage[j].gameObject.SetActive(true);
+                    rawImages[i].rawImage[j].texture = ingredients[i].ingredient[j].icon;
+                }
             }
         }
     }
@@ -62,6 +75,7 @@ public class ContentCloset : MonoBehaviour
         if (currentObj != null)
         {
             OnSelectedHand?.Invoke(handName, currentObj);
+            RemoveItemFromCloset();
         }
     }
 
@@ -72,13 +86,23 @@ public class ContentCloset : MonoBehaviour
         {
             for (int j = 0; j < ingredients[i].ingredient.Count; j++)
             {
-                if (ingredients[i].ingredient[j].prefab.name == image.texture.name)
+                if (ingredients[i].ingredient[j] && ingredients[i].ingredient[j].prefab.name == image.texture.name)
                 {
                     currentObj = ingredients[i].ingredient[j].prefab;
                     stockTextDescrpTemp = ingredients[i].ingredient[j].description;
+                    currentCategoryIndex = i;
+                    currentItemIndex = j;
                 }
             }
         }
+    }
+
+    private void RemoveItemFromCloset()
+    {
+        ingredients[currentCategoryIndex].ingredient.RemoveAt(currentItemIndex);
+        rawImages[currentCategoryIndex].rawImage[currentItemIndex].gameObject.SetActive(false);
+        rawImages[currentCategoryIndex].rawImage.RemoveAt(currentItemIndex);
+        InitItemPanel();
     }
 
     public void HiddeCloset()
@@ -90,9 +114,11 @@ public class ContentCloset : MonoBehaviour
     {
         if (canClick)
         {
+            switchActivePanelInfo = !switchActivePanelInfo;
             if (selectedCheck) selectedCheck.SetActive(false);
-            newSelectedCheck.SetActive(panelInfoItem.activeSelf);
+            panelInfoItem.SetActive(switchActivePanelInfo);
             selectedCheck = newSelectedCheck;
+            OnShowIconCheck?.Invoke(newSelectedCheck, canClick, panelInfoItem.activeSelf);
             canClick = false;
         }
     }
@@ -102,6 +128,8 @@ public class ContentCloset : MonoBehaviour
         InOutElasticY.OnFinishMotionElastic -= HandleCheckCanClick;
         if (selectedCheck) selectedCheck.SetActive(false);
         placard.layer = LayerMask.NameToLayer("Closet");
+        canClick = true;
+        switchActivePanelInfo = false;
     }
 
     public void SetTextDescriptionItem()

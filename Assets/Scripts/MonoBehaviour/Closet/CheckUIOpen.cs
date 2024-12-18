@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CheckUIOpen : MonoBehaviour
 {
-    private bool itemDescriptionIsOpen;
+    private bool itemDescriptionIsOpen = false;
     private GameObject selectedCheck;
     
     [SerializeField] private GameObject panelItemDescription;
@@ -17,14 +17,15 @@ public class CheckUIOpen : MonoBehaviour
     private void OnEnable()
     {
         canClick = true;
-        itemDescriptionIsOpen = false;
         selectedCheck = null;
         InOutElasticY.OnFinishMotionElastic += HandleCheckCanClick;
+        ContentCloset.OnShowIconCheck += OnCloseOpenItemDescription;
     }
 
     private void OnDisable()
     {
         InOutElasticY.OnFinishMotionElastic -= HandleCheckCanClick;
+        ContentCloset.OnShowIconCheck -= OnCloseOpenItemDescription;
         foreach (var tiroir in allTiroirs)
         {
             tiroir.SetActive(false);
@@ -36,26 +37,22 @@ public class CheckUIOpen : MonoBehaviour
         canClick = _canClick;
     }
 
-    public void OnCloseOpenItemDescription(GameObject _check)
+    private void OnCloseOpenItemDescription(GameObject _check, bool _isShow, bool _isShowIcon)
     {
-        if (canClick)
-        {
-            itemDescriptionIsOpen = !itemDescriptionIsOpen;
-            if (selectedCheck && selectedCheck != _check) itemDescriptionIsOpen = false;
-            panelItemDescription.SetActive(itemDescriptionIsOpen);
+        panelItemDescription.SetActive(_isShowIcon);
             
-            inOutElasticYCloseForm.StartAnimationBounce();
-            inOutElasticYGlobalPanel.StartAnimationBounce();
-            inOutElasticYInfoPanel.StartAnimationBounce();
+        inOutElasticYCloseForm.StartAnimationBounce();
+        inOutElasticYGlobalPanel.StartAnimationBounce();
+        inOutElasticYInfoPanel.StartAnimationBounce();
+        
+        _check.SetActive(_isShowIcon);
             
-            selectedCheck = _check;
-            canClick = false;
-        }
+        selectedCheck = _check;
     }
 
     public void CloseClosetCheckUI()
     {
-        if (itemDescriptionIsOpen)
+        if (panelItemDescription.activeSelf)
         {
             panelItemDescription.SetActive(false);
             inOutElasticYCloseForm.StartAnimationBounce();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RaycastCloset : MonoBehaviour
@@ -9,8 +10,8 @@ public class RaycastCloset : MonoBehaviour
     [SerializeField] private Camera leftHandCamera;
     [SerializeField] private Camera rightHandCamera;
     
-    private StockVariationMaterial stockMaterial;
-    private MeshRenderer hitRenderer;
+    private Dictionary<MeshRenderer, StockVariationMaterial> rendererMaterials = new Dictionary<MeshRenderer, StockVariationMaterial>();
+    private List<MeshRenderer> hitRenderers = new List<MeshRenderer>();
     
     private void Update()
     {
@@ -74,20 +75,29 @@ public class RaycastCloset : MonoBehaviour
 
     private void SwitchMaterialWhenMouseIsHover(RaycastHit hitInfo)
     {
-        hitRenderer = hitInfo.transform.gameObject.GetComponent<MeshRenderer>();
-        if (hitRenderer)
+        MeshRenderer[] renderers = hitInfo.transform.gameObject.GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer meshRenderer in renderers)
         {
-            // change le material
-            stockMaterial = hitInfo.transform.gameObject.GetComponent<StockVariationMaterial>();
-            hitRenderer.material = stockMaterial.GetHoverMaterial();
+            StockVariationMaterial stockMaterial = meshRenderer.gameObject.GetComponent<StockVariationMaterial>();
+            if (stockMaterial)
+            {
+                hitRenderers.Add(meshRenderer);
+                rendererMaterials[meshRenderer] = stockMaterial; 
+                meshRenderer.material = stockMaterial.GetHoverMaterial();
+            }
         }
     }
 
     private void ResetMaterialWhenMouseIsNotHover()
     {
-        if (hitRenderer)
+        foreach (MeshRenderer meshRenderer in hitRenderers)
         {
-            hitRenderer.material = stockMaterial.GetDefaultMaterial();
-        }
+            if (rendererMaterials.ContainsKey(meshRenderer))
+            {
+                meshRenderer.material = rendererMaterials[meshRenderer].GetDefaultMaterial();
+            }
+        } 
+        hitRenderers.Clear(); 
+        rendererMaterials.Clear();
     }
 }
