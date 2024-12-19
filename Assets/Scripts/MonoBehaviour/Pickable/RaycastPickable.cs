@@ -16,6 +16,9 @@ public class RaycastPickable : MonoBehaviour
     
     private int chooseHand;
 
+    public delegate void CanTakeIngredient();
+    public static event CanTakeIngredient CanTakeIngredientFunc;
+
     private void Start()
     {
         chooseHand = -1;
@@ -25,12 +28,14 @@ public class RaycastPickable : MonoBehaviour
     {
         ButtonClickPickable.OnButtonClick += HandleButtonClick;
         ContentCloset.OnSelectedHand += HandleButtonClick;
+        DropdownSlots.OnSelectedHand += HandleButtonClickContainerCooking;
     }
 
     private void OnDisable()
     {
         ButtonClickPickable.OnButtonClick -= HandleButtonClick;
         ContentCloset.OnSelectedHand -= HandleButtonClick;
+        DropdownSlots.OnSelectedHand -= HandleButtonClickContainerCooking;
     }
 
     private bool CheckChildInHand()
@@ -44,6 +49,35 @@ public class RaycastPickable : MonoBehaviour
             return true;
         }
         return false;
+    }
+    
+    private void HandleButtonClickContainerCooking(GameObject _curPickedObj)
+    {
+        bool isLeftHandEmpty = leftHandCamera.transform.childCount == 0;
+        bool isRightHandEmpty = rightHandCamera.transform.childCount == 0;
+
+        if (isLeftHandEmpty)
+        {
+            chooseHand = 0;
+        }
+        else if (isRightHandEmpty)
+        {
+            chooseHand = 1;
+        }
+        
+        if (!CheckChildInHand())
+        {
+            SwitchLayer(_curPickedObj, chooseHand == 0 ? "LeftHand" : "RightHand");
+            for (int i = 0; i < _curPickedObj.transform.childCount; i++)
+            {
+                if (_curPickedObj.transform.GetChild(i).GetComponent<Canvas>())
+                {
+                    break;
+                }
+                SwitchLayer(_curPickedObj.transform.GetChild(i).gameObject, chooseHand == 0 ? "LeftHand" : "RightHand");
+            }
+            SwitchParent(_curPickedObj);
+        }
     }
 
     private void HandleButtonClick(string _buttonName, GameObject _curPickedObj = null)
@@ -64,6 +98,7 @@ public class RaycastPickable : MonoBehaviour
         
         if (!CheckChildInHand())
         {
+            CanTakeIngredientFunc?.Invoke();
             SwitchLayer(curPickedObj, _buttonName);
             for (int i = 0; i < curPickedObj.transform.childCount; i++)
             {
@@ -74,7 +109,7 @@ public class RaycastPickable : MonoBehaviour
                 SwitchLayer(curPickedObj.transform.GetChild(i).gameObject, _buttonName);
             }
 
-            SwitchParent();
+            SwitchParent(curPickedObj);
         }
     }
 
@@ -83,16 +118,17 @@ public class RaycastPickable : MonoBehaviour
         _obj.layer = LayerMask.NameToLayer(_layer);
     }
 
-    private void SwitchParent()
+    private void SwitchParent(GameObject _obj)
     {
-        curPickedObj.GetComponentInChildren<MeshCollider>().enabled = false;
-        curPickedObj.transform.parent = chooseHand switch
+        _obj.GetComponentInChildren<MeshCollider>().enabled = false;
+        _obj.transform.parent = chooseHand switch
         {
             0 => leftHandCamera.transform,
             1 => rightHandCamera.transform,
-            _ => curPickedObj.transform.parent
+            _ => _obj.transform.parent
         };
-        curPickedObj.transform.localPosition = new Vector3(0, 0, 2);
+        _obj.transform.localPosition = new Vector3(0, 0, 0.5f);
+        _obj.transform.rotation = new Quaternion(90f, _obj.transform.rotation.y, 45f, _obj.transform.rotation.w);
     }
 
     private void Update()
@@ -118,16 +154,14 @@ public class RaycastPickable : MonoBehaviour
         {
             curPickedObj = hitInfo.collider.gameObject;
             curPickedCanvas = hitInfo.collider.gameObject.GetComponentInChildren<Canvas>(true).gameObject;
-            Debug.Log(curPickedCanvas.name);
-            Debug.Log(curPickedObj.name);
         }
     }
 
     private void ResetStatsObj()
     {
-        curPickedCanvas.SetActive(false);
-        curPickedObj = null;
-        curPickedCanvas = null;
+        if (curPickedCanvas) curPickedCanvas.SetActive(false);
+        if (curPickedObj) curPickedObj = null;
+        if (curPickedCanvas) curPickedCanvas = null;
     }
 
     private void PickableLayerUpdate(Ray ray)

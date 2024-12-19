@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CheckUIOpen : MonoBehaviour
 {
-    private bool itemDescriptionIsOpen = false;
     private GameObject selectedCheck;
     
     [SerializeField] private GameObject panelItemDescription;

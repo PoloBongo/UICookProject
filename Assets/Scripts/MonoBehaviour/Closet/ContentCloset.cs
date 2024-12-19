@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = System.Object;
 
 [Serializable]
 class ContentClosetIngredient
@@ -120,28 +121,30 @@ public class ContentCloset : MonoBehaviour
 
     public void ChooseHand(string handName)
     {
-        if (currentObj != null)
+        if (currentObj != null && selectedCheck.activeSelf)
         {
+            ShowCheckIcon(selectedCheck);
             OnSelectedHand?.Invoke(handName, currentObj);
             RemoveItemFromCloset();
-            ShowCheckIcon(selectedCheck);
         }
     }
 
-    public void SetCurrentObj(RawImage image)
+    public void SetCurrentObj(ItemMetadata itemMetadata)
     {
         currentObj = null;
-        for (int i = 0; i < ingredients.Count; i++)
+        int category = itemMetadata.CategoryIndex;
+        RawImage rawImage = itemMetadata.Image;
+
+        for (int i = 0; i < ingredients[category].ingredient.Count; i++)
         {
-            for (int j = 0; j < ingredients[i].ingredient.Count; j++)
+            if (ingredients[category].ingredient[i] &&
+                ingredients[category].ingredient[i].prefab.name == rawImage.texture.name)
             {
-                if (ingredients[i].ingredient[j] && ingredients[i].ingredient[j].prefab.name == image.texture.name)
-                {
-                    currentObj = ingredients[i].ingredient[j].prefab;
-                    stockTextDescrpTemp = ingredients[i].ingredient[j].description;
-                    currentCategoryIndex = i;
-                    currentItemIndex = j;
-                }
+                currentObj = ingredients[category].ingredient[i].prefab;
+                stockTextDescrpTemp = ingredients[category].ingredient[i].description;
+                currentCategoryIndex = category;
+                currentItemIndex = i;
+                return;
             }
         }
     }

@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class Cook : MonoBehaviour
 {
-    private List<GameObject> ingredientsInFour;
+    private List<GameObject> ingredientsInFour = new List<GameObject>();
     [Header("List Recipes")]
     [SerializeField] private ListRecipesCreator listRecipesCreator;
-    int totalIngredients = 3;
+    int totalIngredients;
+    
+    private void Start()
+    {
+        totalIngredients = 0;
+        ingredientsInFour = new List<GameObject>();
+    }
     
     private void GetFourChild()
     {
+        ingredientsInFour.Clear();
+        int uiLayer = LayerMask.NameToLayer("UI");
         for (int i = 0; i < gameObject.transform.childCount; i++)
         {
-            if (gameObject.transform.GetChild(i).gameObject.layer != LayerMask.GetMask("UI"))
+            GameObject child = gameObject.transform.GetChild(i).gameObject;
+            if (child.layer != uiLayer)
             {
-                ingredientsInFour.Add(gameObject.transform.GetChild(i).gameObject);
+                ingredientsInFour.Add(child);
             }
         }
     }
@@ -25,34 +34,45 @@ public class Cook : MonoBehaviour
         GetFourChild();
         int recipeCount = 0;
         int validIngredientsCount = 0;
+        totalIngredients = listRecipesCreator.recipes[recipeCount].ingredients.Count;
 
-        for (int i = 0; i < totalIngredients; i++)
+        if (ingredientsInFour.Count < totalIngredients)
         {
-            Debug.Log(ReturnIngredientsFromRecipe(recipeCount)[i]);
-            if (ReturnIngredientsFromRecipe(recipeCount)[i] == ingredientsInFour[i].name)
+            Debug.Log("Pas assez d'ingrédients dans le four !");
+            return;
+        }
+
+        List<IngredientCreator> recipeIngredients = ReturnIngredientsFromRecipe(recipeCount);
+        List<IngredientCreator> availableIngredients = ingredientsInFour
+            .Select(obj => obj.GetComponent<Item>().GetIngredientCreator())
+            .ToList();
+
+        foreach (var recipeIngredient in recipeIngredients)
+        {
+            if (availableIngredients.Contains(recipeIngredient))
             {
                 validIngredientsCount++;
+                availableIngredients.Remove(recipeIngredient);
             }
+        }
 
-            if (validIngredientsCount == totalIngredients)
-            {
-                Debug.Log("tous les ingrédients requis pour la recette sont dans le four manuelo");
-                return;
-            }
-
-            if (listRecipesCreator.recipes[recipeCount].ingredients.Count == totalIngredients)
-            {
-                recipeCount++;
-            }
+        if (validIngredientsCount == totalIngredients)
+        {
+            Debug.Log("Tous les ingrédients requis pour la recette sont dans le four !");
+        }
+        else
+        {
+            Debug.Log("Recette invalide ou ingrédients manquants.");
         }
     }
 
-    private List<string> ReturnIngredientsFromRecipe(int _recipeID)
+
+    private List<IngredientCreator> ReturnIngredientsFromRecipe(int _recipeID)
     {
-        List<string> ingredients = new List<string>();
+        List<IngredientCreator> ingredients = new List<IngredientCreator>();
         for (int i = 0; i < listRecipesCreator.recipes[_recipeID].ingredients.Count; i++)
         {
-            ingredients.Add(listRecipesCreator.recipes[_recipeID].ingredients[i].name);
+            ingredients.Add(listRecipesCreator.recipes[_recipeID].ingredients[i]);
         }
         return ingredients;
     }

@@ -7,6 +7,7 @@ public class RaycastContainer : MonoBehaviour
 {
     [SerializeField] private RaycastPickable raycastPickable;
     private GameObject curContainerPickedObj;
+    private GameObject lastContainerPickedObj;
     private GameObject curPickedCanvas;
     private Camera chooseFreeCamForGetContainer;
     private string layerGetContainer;
@@ -18,14 +19,29 @@ public class RaycastContainer : MonoBehaviour
     private Dictionary<MeshRenderer, StockVariationMaterial> rendererMaterials = new Dictionary<MeshRenderer, StockVariationMaterial>();
     private List<MeshRenderer> hitRenderers = new List<MeshRenderer>();
     
+    // slots
+    private List<Vector3> availableSlots = new List<Vector3>();
+    private List<Vector3> allSlots = new List<Vector3>();
+    private List<Vector3> occupiedSlots = new List<Vector3>();
+    private int indexDropdownContainer = 0;
+    private string actualTag;
+
+    public delegate void SendGameObjectAssociateToUsedSlot(GameObject curObj, int slotIndex);
+    public static event SendGameObjectAssociateToUsedSlot SendGameObjectAssociateToUsedSlotFunc;
     private void OnEnable()
     {
         ButtonClickContainer.OnContainerButtonClick += HandleContainerButtonClick;
+        DropdownSlots.OnChangeIndexDropdownContainerFunc += HandleGetIndexDropdownContainer;
+        Slots.OnSetupCopySlotPositionsFunc += SetupCopySlotPositions;
+        RaycastPickable.CanTakeIngredientFunc += CanTakeIngredient;
     }
 
     private void OnDisable()
     {
         ButtonClickContainer.OnContainerButtonClick -= HandleContainerButtonClick;
+        DropdownSlots.OnChangeIndexDropdownContainerFunc -= HandleGetIndexDropdownContainer;
+        Slots.OnSetupCopySlotPositionsFunc -= SetupCopySlotPositions;
+        RaycastPickable.CanTakeIngredientFunc -= CanTakeIngredient;
     }
 
     private bool CheckChildInHand()
@@ -46,7 +62,7 @@ public class RaycastContainer : MonoBehaviour
         return true;
     }
     
-    private void HandleContainerButtonClick(string _buttonName, GameObject _parent)
+    private void HandleContainerButtonClick(string _buttonName, GameObject _parent, bool _activeSlot)
     {
         GameObject _pickedObj = null;
 
@@ -58,7 +74,7 @@ public class RaycastContainer : MonoBehaviour
                     _pickedObj = leftHandCamera.transform.GetChild(0).gameObject;
                     SwitchLayer(_pickedObj, _buttonName);
                     SwitchLayerMainFunc(_pickedObj, _buttonName);
-                    SwitchParentChild(_parent, _pickedObj);
+                    SwitchParentChild(_parent, _pickedObj, _activeSlot);
                 }
                 break;
             case "DropRightHand":
@@ -67,7 +83,7 @@ public class RaycastContainer : MonoBehaviour
                     _pickedObj = rightHandCamera.transform.GetChild(0).gameObject;
                     SwitchLayer(_pickedObj, _buttonName);
                     SwitchLayerMainFunc(_pickedObj, _buttonName);
-                    SwitchParentChild(_parent, _pickedObj);
+                    SwitchParentChild(_parent, _pickedObj, _activeSlot);
                 }
                 break;
             case "Hand":
@@ -79,6 +95,11 @@ public class RaycastContainer : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    private void HandleGetIndexDropdownContainer(int _index)
+    {
+        indexDropdownContainer = _index;
     }
 
     private void SwitchLayerMainFunc(GameObject _obj, string _layer)
@@ -98,11 +119,48 @@ public class RaycastContainer : MonoBehaviour
         _obj.layer = LayerMask.NameToLayer(_layer);
     }
 
-    private void SwitchParentChild(GameObject _parent, GameObject _pickedObj)
+    private void SwitchParentChild(GameObject _parent, GameObject _pickedObj, bool _activeSlot)
     {
         _pickedObj.transform.parent = _parent.transform;
-        _pickedObj.transform.localPosition = new Vector3(0, 0, 0);
-        _pickedObj.transform.localPosition = new Vector3(0, 0.763f, 0);
+        if (_activeSlot)
+        {
+            PlaceOnSlot(_parent, _pickedObj);
+        }
+        //_pickedObj.transform.localPosition = new Vector3(0, 0, 0);
+    }
+    
+    private void PlaceOnSlot(GameObject parent, GameObject pickedObj)
+    {
+        if (availableSlots.Count > 0)
+        {
+            Vector3 slotPosition = availableSlots[0];
+            int slotIndex = allSlots.IndexOf(slotPosition);
+            pickedObj.transform.parent = parent.transform;
+            pickedObj.transform.localPosition = slotPosition;
+
+            occupiedSlots.Add(slotPosition);
+            SendGameObjectAssociateToUsedSlotFunc?.Invoke(pickedObj, slotIndex);
+            availableSlots.RemoveAt(0);
+        }
+    }
+    
+    public void ReleaseSlot()
+    {
+        if (indexDropdownContainer >= 0 && indexDropdownContainer < occupiedSlots.Count)
+        {
+            Vector3 slotPosition = occupiedSlots[indexDropdownContainer];
+            occupiedSlots.RemoveAt(indexDropdownContainer);
+            availableSlots.Add(slotPosition);
+        }
+        else
+        {
+            Debug.Log("Index invalide : Impossible de libérer le slot.");
+        }
+    }
+
+    private void CanTakeIngredient()
+    {
+        ReleaseSlot();
     }
     
     private void SwitchParent(GameObject _parent, GameObject _pickedObj)
@@ -127,17 +185,34 @@ public class RaycastContainer : MonoBehaviour
 
     private void StockPickedObj(RaycastHit hitInfo, bool _isClicked = false)
     {
+        if (availableSlots.Count <= 0)
+        {
+            Debug.Log("PAS EGAUXXX : 1 = " + hitInfo.transform.gameObject.tag + " : " + actualTag);
+            var slotsComponent = hitInfo.transform.gameObject.GetComponent<Slots>() 
+                                 ?? hitInfo.transform.gameObject.GetComponentInChildren<Slots>();
+            availableSlots = slotsComponent.SlotPositions;
+        }
         if (_isClicked)
         {
+            if (!hitInfo.transform.gameObject.CompareTag(actualTag))
+            {
+                Debug.Log("PAS EGAUX : 1 = " + hitInfo.transform.gameObject.tag + " : " + actualTag);
+                var slotsComponent = hitInfo.transform.gameObject.GetComponent<Slots>() 
+                                     ?? hitInfo.transform.gameObject.GetComponentInChildren<Slots>();
+                if (slotsComponent) availableSlots = slotsComponent.SlotPositions;
+            }
             ResetStatsObj();
         }
         if (!curContainerPickedObj)
         {
             curContainerPickedObj = hitInfo.collider.gameObject;
             curPickedCanvas = hitInfo.collider.gameObject.GetComponentInChildren<Canvas>(true).gameObject;
-            Debug.Log(curPickedCanvas.name);
-            Debug.Log(curContainerPickedObj.name);
         }
+    }
+
+    private void SetupCopySlotPositions(List<Vector3> _slotPos)
+    {
+        allSlots = new List<Vector3>(_slotPos);
     }
 
     private void ResetStatsObj()
@@ -152,12 +227,14 @@ public class RaycastContainer : MonoBehaviour
         RaycastHit hitInfo;
         if (Physics.Raycast(ray, out hitInfo, 10f, LayerMask.GetMask("Container")))
         {
+            actualTag = hitInfo.transform.gameObject.tag;
             SwitchMaterialWhenMouseIsHover(hitInfo);
             // stock l'obj ciblé
             StockPickedObj(hitInfo);
 
             if (Input.GetMouseButtonDown(0))
             {
+                lastContainerPickedObj = hitInfo.transform.gameObject;
                 StockPickedObj(hitInfo, true);
                 if (curPickedCanvas)
                 {

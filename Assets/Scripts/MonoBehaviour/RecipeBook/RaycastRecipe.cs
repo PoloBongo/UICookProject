@@ -41,7 +41,6 @@ public class RaycastRecipe : MonoBehaviour
             curSelectedObj = hitInfo.collider.gameObject.GetComponentInParent<Animator>().gameObject;
             curSelectedAnimator = curSelectedObj.GetComponent<Animator>();
             if (!curSelectedAnimator) Debug.LogError(curSelectedObj.name + " not found");
-            Debug.Log(curSelectedObj.name);
         }
     }
 
