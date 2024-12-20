@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5db485973a7b638488e2880b34c12077, type: 3}
+  m_Name: QuickHotdog
+  m_EditorClassIdentifier: 
+  recipePrefab: {fileID: 8435440963665084209, guid: 1316452647a73184cba85ad0f097c3fa, type: 3}
+  recipeName: Quick Hotdog
+  ingredients:
+  - {fileID: 11400000, guid: 4c94badbd6a34804b946ffe2f003a92c, type: 2}
+  - {fileID: 11400000, guid: 37bc072028e610c45a2049d138a37f32, type: 2}
+  - {fileID: 11400000, guid: 41ab0f0ab844566459b6cafb90a5832b, type: 2}
+  - {fileID: 11400000, guid: 8be591aa4ad7f694b9de8fd6e69b30df, type: 2}
+  descriptionRecipe: "Un hotdog pas classique avec du bacon croustillant, du cheddar
+    fondant et un steak hach\xE9 savoureux, servi dans un bun au s\xE9same."

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEditor;
@@ -8,6 +9,7 @@ public class SetupFormOptions : MonoBehaviour
     [SerializeField] private TMP_Dropdown dropdownRecipe;
     [SerializeField] private ListIngredients ingredients;
     [SerializeField] private ListRecipesCreator getRecipeFormInput;
+    [SerializeField] private GameObject brutForcePrefab;
 
     [Header("UI Elements")]
     [SerializeField] private GameObject showIngredientsList;
@@ -20,6 +22,9 @@ public class SetupFormOptions : MonoBehaviour
     private string getTitleFormInput;
     private string getDescrFormInput;
     private List<IngredientCreator> getIngredientsFormInput;
+    
+    public delegate void OnShowNotification(string message);
+    public static event OnShowNotification OnShowNotificationFunc;
     
     private void OnEnable()
     {
@@ -54,15 +59,29 @@ public class SetupFormOptions : MonoBehaviour
         newRecipe.recipeName = getTitleFormInput;
         newRecipe.ingredients = getIngredientsFormInput;
         newRecipe.descriptionRecipe = getDescrFormInput;
+        newRecipe.recipePrefab = brutForcePrefab;
 
+        if (getTitleFormInput == "")
+        {
+            OnShowNotificationFunc?.Invoke("Vous devez entrer un nom de recette!");
+            return;
+        }
+        
+        if (getIngredientsFormInput.Count <= 0)
+        {
+            OnShowNotificationFunc?.Invoke("Vous devez entrer des ingredients!");
+            return;
+        }
+        
         for (int i = 0; i < getRecipeFormInput.recipes.Count; i++)
         {
             if (newRecipe.name == getRecipeFormInput.recipes[i].name) return;
         }
-        string path = $"Assets/Scripts/ScriptableObject/ListRecipes/{getTitleFormInput}.asset";
+        string path = $"{Application.persistentDataPath}/{getTitleFormInput}.json";
+        string jsonData = JsonUtility.ToJson(newRecipe);
+        File.WriteAllText(path, jsonData);
+        OnShowNotificationFunc?.Invoke("Nouvelle recette ' " + newRecipe.recipeName + " ' crée avec succès !");
         getRecipeFormInput.recipes.Add(newRecipe);
-        AssetDatabase.CreateAsset(newRecipe, path);
-        AssetDatabase.SaveAssets();
         ResetInputField();
         CloseAllIngredients();
     }

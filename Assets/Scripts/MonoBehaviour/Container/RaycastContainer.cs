@@ -28,12 +28,14 @@ public class RaycastContainer : MonoBehaviour
 
     public delegate void SendGameObjectAssociateToUsedSlot(GameObject curObj, int slotIndex);
     public static event SendGameObjectAssociateToUsedSlot SendGameObjectAssociateToUsedSlotFunc;
+    
+    public delegate void OnShowNotification(string message);
+    public static event OnShowNotification OnShowNotificationFunc;
     private void OnEnable()
     {
         ButtonClickContainer.OnContainerButtonClick += HandleContainerButtonClick;
         DropdownSlots.OnChangeIndexDropdownContainerFunc += HandleGetIndexDropdownContainer;
         Slots.OnSetupCopySlotPositionsFunc += SetupCopySlotPositions;
-        RaycastPickable.CanTakeIngredientFunc += CanTakeIngredient;
     }
 
     private void OnDisable()
@@ -41,7 +43,6 @@ public class RaycastContainer : MonoBehaviour
         ButtonClickContainer.OnContainerButtonClick -= HandleContainerButtonClick;
         DropdownSlots.OnChangeIndexDropdownContainerFunc -= HandleGetIndexDropdownContainer;
         Slots.OnSetupCopySlotPositionsFunc -= SetupCopySlotPositions;
-        RaycastPickable.CanTakeIngredientFunc -= CanTakeIngredient;
     }
 
     private bool CheckChildInHand()
@@ -65,7 +66,8 @@ public class RaycastContainer : MonoBehaviour
     private void HandleContainerButtonClick(string _buttonName, GameObject _parent, bool _activeSlot)
     {
         GameObject _pickedObj = null;
-
+        if (availableSlots.Count <= 0 && _activeSlot) return;
+        
         switch (_buttonName)
         {
             case "DropLeftHand":
@@ -117,6 +119,7 @@ public class RaycastContainer : MonoBehaviour
     private void SwitchLayer(GameObject _obj, string _layer)
     {
         _obj.layer = LayerMask.NameToLayer(_layer);
+        OnShowNotificationFunc?.Invoke("Vous venez de déposer : " + _obj.name);
     }
 
     private void SwitchParentChild(GameObject _parent, GameObject _pickedObj, bool _activeSlot)
@@ -129,13 +132,13 @@ public class RaycastContainer : MonoBehaviour
         //_pickedObj.transform.localPosition = new Vector3(0, 0, 0);
     }
     
-    private void PlaceOnSlot(GameObject parent, GameObject pickedObj)
+    public void PlaceOnSlot(GameObject parent, GameObject pickedObj)
     {
         if (availableSlots.Count > 0)
         {
             Vector3 slotPosition = availableSlots[0];
             int slotIndex = allSlots.IndexOf(slotPosition);
-            pickedObj.transform.parent = parent.transform;
+            pickedObj.transform.SetParent(parent.transform);
             pickedObj.transform.localPosition = slotPosition;
 
             occupiedSlots.Add(slotPosition);
@@ -157,8 +160,23 @@ public class RaycastContainer : MonoBehaviour
             Debug.Log("Index invalide : Impossible de libérer le slot.");
         }
     }
+    
+    public void ReleaseSlotWithIndex(int slotIndex = -1)
+    {
+        if (slotIndex != -1) indexDropdownContainer = slotIndex;
+        if (indexDropdownContainer >= 0 && indexDropdownContainer < occupiedSlots.Count)
+        {
+            Vector3 slotPosition = occupiedSlots[indexDropdownContainer];
+            occupiedSlots.RemoveAt(indexDropdownContainer);
+            availableSlots.Add(slotPosition);
+        }
+        else
+        {
+            Debug.Log("Index invalide : Impossible de libérer le slot.");
+        }
+    }
 
-    private void CanTakeIngredient()
+    private void CanTakeIngredient(int _deletedIndex = -1)
     {
         ReleaseSlot();
     }
@@ -177,7 +195,7 @@ public class RaycastContainer : MonoBehaviour
     
         ContainerLayerUpdate(ray);
         
-        if (curPickedCanvas && Vector3.Distance(transform.position, curContainerPickedObj.transform.position) > 5)
+        if (curPickedCanvas && Vector3.Distance(transform.position, curContainerPickedObj.transform.position) > 2.5f)
         {
             ResetStatsObj();
         }
@@ -187,8 +205,7 @@ public class RaycastContainer : MonoBehaviour
     {
         if (availableSlots.Count <= 0)
         {
-            Debug.Log("PAS EGAUXXX : 1 = " + hitInfo.transform.gameObject.tag + " : " + actualTag);
-            var slotsComponent = hitInfo.transform.gameObject.GetComponent<Slots>() 
+            var slotsComponent = hitInfo.transform.gameObject.GetComponent<Slots>()
                                  ?? hitInfo.transform.gameObject.GetComponentInChildren<Slots>();
             availableSlots = slotsComponent.SlotPositions;
         }
@@ -196,7 +213,6 @@ public class RaycastContainer : MonoBehaviour
         {
             if (!hitInfo.transform.gameObject.CompareTag(actualTag))
             {
-                Debug.Log("PAS EGAUX : 1 = " + hitInfo.transform.gameObject.tag + " : " + actualTag);
                 var slotsComponent = hitInfo.transform.gameObject.GetComponent<Slots>() 
                                      ?? hitInfo.transform.gameObject.GetComponentInChildren<Slots>();
                 if (slotsComponent) availableSlots = slotsComponent.SlotPositions;
@@ -225,7 +241,7 @@ public class RaycastContainer : MonoBehaviour
     private void ContainerLayerUpdate(Ray ray)
     {
         RaycastHit hitInfo;
-        if (Physics.Raycast(ray, out hitInfo, 10f, LayerMask.GetMask("Container")))
+        if (Physics.Raycast(ray, out hitInfo, 2.5f, LayerMask.GetMask("Container")))
         {
             actualTag = hitInfo.transform.gameObject.tag;
             SwitchMaterialWhenMouseIsHover(hitInfo);
@@ -270,7 +286,7 @@ public class RaycastContainer : MonoBehaviour
         {
             if (rendererMaterials.ContainsKey(meshRenderer))
             {
-                meshRenderer.material = rendererMaterials[meshRenderer].GetDefaultMaterial();
+                if (meshRenderer) meshRenderer.material = rendererMaterials[meshRenderer].GetDefaultMaterial();
             }
         } 
         hitRenderers.Clear(); 

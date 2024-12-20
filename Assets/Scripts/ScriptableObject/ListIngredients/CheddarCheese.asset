@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: CheddarCheese
   m_EditorClassIdentifier: 
   prefab: {fileID: 302116531988806050, guid: 363955a43b263b04db87c074f8c0e964, type: 3}
+  meshCuit: {fileID: -1145099863015453136, guid: c77e13b355f72044683605dafb23df16, type: 3}
   icon: {fileID: 2800000, guid: c402571319831a24c9b3382a94326b67, type: 3}
   name: Cheddar Cheese
-  description: Adds a touch of flavor
+  description: Cheddar cheese is a rich, creamy cheese with a sharp flavor, perfect
+    for melting, snacking, or enhancing savory dishes.

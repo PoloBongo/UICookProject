@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5db485973a7b638488e2880b34c12077, type: 3}
+  m_Name: Pancake
+  m_EditorClassIdentifier: 
+  recipePrefab: {fileID: 4363241196587671831, guid: 5a13447a7da133c4fa98b14c804abf91, type: 3}
+  recipeName: Pancake
+  ingredients:
+  - {fileID: 11400000, guid: 7a4f03810977b5342bb6f9b0ea54f9ed, type: 2}
+  - {fileID: 11400000, guid: 41ab0f0ab844566459b6cafb90a5832b, type: 2}
+  descriptionRecipe: "Un pancake est une cr\xEApe \xE9paisse et moelleuse, souvent
+    servie au petit-d\xE9jeuner, accompagn\xE9e de sirop, de fruits ou de beurre."

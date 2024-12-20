@@ -16,9 +16,6 @@ public class RaycastPickable : MonoBehaviour
     
     private int chooseHand;
 
-    public delegate void CanTakeIngredient();
-    public static event CanTakeIngredient CanTakeIngredientFunc;
-
     private void Start()
     {
         chooseHand = -1;
@@ -98,7 +95,7 @@ public class RaycastPickable : MonoBehaviour
         
         if (!CheckChildInHand())
         {
-            CanTakeIngredientFunc?.Invoke();
+            //CanTakeIngredientFunc?.Invoke();
             SwitchLayer(curPickedObj, _buttonName);
             for (int i = 0; i < curPickedObj.transform.childCount; i++)
             {
@@ -127,7 +124,8 @@ public class RaycastPickable : MonoBehaviour
             1 => rightHandCamera.transform,
             _ => _obj.transform.parent
         };
-        _obj.transform.localPosition = new Vector3(0, 0, 0.5f);
+        _obj.transform.localPosition = new Vector3(0, 0, 1.3f);
+        _obj.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         _obj.transform.rotation = new Quaternion(90f, _obj.transform.rotation.y, 45f, _obj.transform.rotation.w);
     }
 
@@ -138,7 +136,7 @@ public class RaycastPickable : MonoBehaviour
     
         PickableLayerUpdate(ray);
         
-        if (curPickedCanvas && Vector3.Distance(transform.position, curPickedObj.transform.position) > 5)
+        if (curPickedCanvas && curPickedObj && Vector3.Distance(transform.position, curPickedObj.transform.position) > 5)
         {
             ResetStatsObj();
         }
@@ -153,7 +151,7 @@ public class RaycastPickable : MonoBehaviour
         if (!curPickedObj)
         {
             curPickedObj = hitInfo.collider.gameObject;
-            curPickedCanvas = hitInfo.collider.gameObject.GetComponentInChildren<Canvas>(true).gameObject;
+            if (hitInfo.collider.gameObject) curPickedCanvas = hitInfo.collider.gameObject.GetComponentInChildren<Canvas>(true).gameObject;
         }
     }
 

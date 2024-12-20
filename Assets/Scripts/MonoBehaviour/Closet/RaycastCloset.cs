@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,13 +7,22 @@ public class RaycastCloset : MonoBehaviour
     private GameObject curClosetPickedObj;
     private GameObject curPickedCanvas;
 
+    private InputActionManager inputActionManager;
+    private PlayerInputAction playerInputAction;
+
     [Header("Settings Camera")]
     [SerializeField] private Camera leftHandCamera;
     [SerializeField] private Camera rightHandCamera;
     
     private Dictionary<MeshRenderer, StockVariationMaterial> rendererMaterials = new Dictionary<MeshRenderer, StockVariationMaterial>();
     private List<MeshRenderer> hitRenderers = new List<MeshRenderer>();
-    
+
+    private void Start()
+    {
+        if (!inputActionManager) inputActionManager = InputActionManager.Instance;
+        playerInputAction = inputActionManager.GetPlayerInputAction();
+    }
+
     private void Update()
     {
         Vector2 mousePosition = Input.mousePosition;
@@ -50,7 +60,7 @@ public class RaycastCloset : MonoBehaviour
     private void ClosetLayerUpdate(Ray ray)
     {
         RaycastHit hitInfo;
-        if (Physics.Raycast(ray, out hitInfo, 10f, LayerMask.GetMask("Closet")))
+        if (Physics.Raycast(ray, out hitInfo, 3f, LayerMask.GetMask("Closet")))
         {
             SwitchMaterialWhenMouseIsHover(hitInfo);
 
@@ -64,6 +74,7 @@ public class RaycastCloset : MonoBehaviour
                 {
                     curPickedCanvas.transform.LookAt(new Vector3(transform.position.x, curPickedCanvas.transform.position.y, transform.position.z));
                     curPickedCanvas.SetActive(true);
+                    playerInputAction.Player.Disable();
                 }
             }
         }

@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Four
+  - Title
+  - Description
   layers:
   - Default
   - TransparentFX

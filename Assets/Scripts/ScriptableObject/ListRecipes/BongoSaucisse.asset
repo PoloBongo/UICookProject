@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5db485973a7b638488e2880b34c12077, type: 3}
+  m_Name: BongoSaucisse
+  m_EditorClassIdentifier: 
+  recipePrefab: {fileID: 221025165036704325, guid: bdcb1163aaa701e47a05799e04111331, type: 3}
+  recipeName: Bongo Saucisse
+  ingredients:
+  - {fileID: 11400000, guid: 4c94badbd6a34804b946ffe2f003a92c, type: 2}
+  - {fileID: 11400000, guid: 37bc072028e610c45a2049d138a37f32, type: 2}
+  - {fileID: 11400000, guid: 0d3c4e3494aaa8e4797a79ed7f655997, type: 2}
+  descriptionRecipe: "Un m\xE9lange r\xE9confortant de saucisses, de bacon et de
+    morceaux de patate douce, id\xE9al pour un brunch ou un d\xEEner rapide."

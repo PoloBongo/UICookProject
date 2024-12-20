@@ -17,18 +17,25 @@ public class DropdownSlots : MonoBehaviour
     public delegate void OnHandClick(GameObject currentObj);
     public static event OnHandClick OnSelectedHand;
     
+    public delegate void OnShowNotification(string message);
+    public static event OnShowNotification OnShowNotificationFunc;
+    
     private int selectedIndex;
+
+    public int SelectedIndex
+    {
+        get => selectedIndex;
+        set => selectedIndex = value;
+    }
 
     private void OnEnable()
     {
         RaycastContainer.SendGameObjectAssociateToUsedSlotFunc += GetGameObjectAssociateToUsedSlot;
-        RaycastPickable.CanTakeIngredientFunc += CanTakeIngredient;
     }
 
     private void OnDisable()
     {
         RaycastContainer.SendGameObjectAssociateToUsedSlotFunc -= GetGameObjectAssociateToUsedSlot;
-        RaycastPickable.CanTakeIngredientFunc -= CanTakeIngredient;
     }
 
     private void Start()
@@ -43,6 +50,7 @@ public class DropdownSlots : MonoBehaviour
 
     private void OnDropdownValueChanged(int value)
     {
+        selectedIndex = 0;
         string selectedOption = dropdown.options[value].text;
         int newSelectedIndex = int.Parse(selectedOption);
         newSelectedIndex--;
@@ -52,13 +60,16 @@ public class DropdownSlots : MonoBehaviour
 
     private void GetGameObjectAssociateToUsedSlot(GameObject _gameObject, int slotIndex)
     {
-        if (slotAssociations.ContainsKey(slotIndex))
-        {
-            Debug.LogWarning($"Le slot {slotIndex} est déjà occupé par {slotAssociations[slotIndex].name}");
-            return;
-        }
+        // if (slotAssociations.ContainsKey(slotIndex))
+        // {
+        //     return;
+        // }
         slotAssociations[slotIndex] = _gameObject;
-        Debug.Log($"GameObject {_gameObject.name} associé à la position {slotIndex}");
+    }
+    
+    public void GetGameObjectAssociateToUsedSlotFour(GameObject _gameObject, int slotIndex)
+    {
+        slotAssociations[slotIndex] = _gameObject;
     }
     
     private GameObject GetGameObjectAtSlot(int slotIndex)
@@ -69,15 +80,29 @@ public class DropdownSlots : MonoBehaviour
     public void GetObjectAtPosition()
     {
         GameObject selectedObject = GetGameObjectAtSlot(selectedIndex);
+        OnShowNotificationFunc?.Invoke("Vous venez de prendre : " + selectedObject.name);
         if (selectedObject)
         {
             OnSelectedHand?.Invoke(selectedObject);
         }
     }
 
-    private void CanTakeIngredient()
+    public void CanTakeIngredient(int _deletedIndex = -1)
     {
+        if (_deletedIndex != -1) selectedIndex = _deletedIndex;
         slotAssociations.Remove(selectedIndex);
+    }
+    
+    public int GetSlotIndex(GameObject obj)
+    {
+        foreach (var entry in slotAssociations)
+        {
+            if (entry.Value == obj)
+            {
+                return entry.Key;
+            }
+        }
+        return -1;
     }
 
     private void OnDestroy()

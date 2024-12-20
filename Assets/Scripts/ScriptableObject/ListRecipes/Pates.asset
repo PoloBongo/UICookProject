@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5db485973a7b638488e2880b34c12077, type: 3}
+  m_Name: Pates
+  m_EditorClassIdentifier: 
+  recipePrefab: {fileID: 4494536704598452112, guid: 672ed8f32a614ff49a22e2039df2ef11, type: 3}
+  recipeName: Pates
+  ingredients:
+  - {fileID: 11400000, guid: 8c21f7626c6c69446bc9362ea43e9452, type: 2}
+  - {fileID: 11400000, guid: 8c21f7626c6c69446bc9362ea43e9452, type: 2}
+  - {fileID: 11400000, guid: 639d660c39be74142805a98a3f4aeb3b, type: 2}
+  descriptionRecipe: "Les p\xE2tes sont un aliment de base italien, g\xE9n\xE9ralement
+    \xE0 base de farine de bl\xE9, id\xE9ales pour accompagner une vari\xE9t\xE9
+    de sauces, de viandes ou de l\xE9gumes."

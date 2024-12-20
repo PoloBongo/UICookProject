@@ -109,12 +109,12 @@ public class IndexRecipe : MonoBehaviour
     public void ShowFormAddRecipe()
     {
         uiAddRecipe.SetActive(true);
-        playerInputAction.Player.Disable();
+        playerInputAction.Player.Movement.Disable();
     }
     
     public void HiddeFormAddRecipe()
     {
         uiAddRecipe.SetActive(false);
-        playerInputAction.Player.Enable();
+        playerInputAction.Player.Movement.Enable();
     }
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8491534589434847728}
   - component: {fileID: 2674993565211950681}
   - component: {fileID: 6887733893228670265}
+  - component: {fileID: -2904929448184265773}
   m_Layer: 6
   m_Name: burgerBun_Sesame
   m_TagString: Untagged
@@ -30,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -124,3 +125,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 253499c25cbc2a14a89e97e0712c27fe, type: 2}
   defaultMaterial: {fileID: 2100000, guid: b3737475b3717db4cabb07581e28a3bf, type: 2}
+--- !u!114 &-2904929448184265773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6530758574615387552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87d7da8a3986523488e760727f8f7a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientCreator: {fileID: 11400000, guid: d07e2426948531749b2083e97b08bf47, type: 2}

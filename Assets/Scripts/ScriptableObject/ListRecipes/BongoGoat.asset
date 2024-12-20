@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5db485973a7b638488e2880b34c12077, type: 3}
+  m_Name: BongoGoat
+  m_EditorClassIdentifier: 
+  recipePrefab: {fileID: 4821919199197685339, guid: e632d73b97f61ff4eb32c5c07bb19e86, type: 3}
+  recipeName: Bongo Goat
+  ingredients:
+  - {fileID: 11400000, guid: 8be591aa4ad7f694b9de8fd6e69b30df, type: 2}
+  - {fileID: 11400000, guid: 4b918bb47df017b41b31883441b9d8ba, type: 2}
+  - {fileID: 11400000, guid: 41ab0f0ab844566459b6cafb90a5832b, type: 2}
+  - {fileID: 11400000, guid: 9b5a4f04ee303744daeaaf5f3cfd1fbc, type: 2}
+  descriptionRecipe: "Une cuisse de poulet savoureuse, cuite \xE0 la perfection et
+    garnie de cheddar fondant, offrant une combinaison d\xE9licieuse et fondante."

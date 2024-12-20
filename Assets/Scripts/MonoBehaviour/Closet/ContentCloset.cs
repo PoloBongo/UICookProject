@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = System.Object;
+using Random = UnityEngine.Random;
 
 [Serializable]
 class ContentClosetIngredient
@@ -22,6 +23,15 @@ class ContentClosetIngredientSprite
 
 public class ContentCloset : MonoBehaviour
 {
+    private InputActionManager inputActionManager;
+    private PlayerInputAction playerInputAction;
+    
+    [Header("Copy")]
+    [SerializeField] private List<ContentClosetIngredient> cpyIngredients;
+    [SerializeField] private List<ContentClosetIngredientSprite> cpyRawImages;
+    [SerializeField] private List<Transform> listTab;
+    [SerializeField] private List<GameObject> closet;
+    [SerializeField] private List<InOutElasticYFrigo> animOffset;
     [Header("ContentCloset")]
     [SerializeField] private List<ContentClosetIngredient> ingredients;
     [SerializeField] private List<ContentClosetIngredientSprite> rawImages;
@@ -48,20 +58,117 @@ public class ContentCloset : MonoBehaviour
     public delegate void OnShowIconCheckEvent(GameObject newSelectedCheck, bool isShow, bool isShowIcon);
     public static event OnShowIconCheckEvent OnShowIconCheck;
     
+    public delegate void OnShowNotification(string message);
+    public static event OnShowNotification OnShowNotificationFunc;
+    
+    // generated item & closet
+    private int categoryNumber;
+    private List<int> itemsPerCategory = new List<int>();
+    
     private void OnEnable()
     {
+        ResetData();
+        categoryNumber = Random.Range(1, 5);
+        for (int i = 0; i < categoryNumber; i++)
+        {
+            closet[i].SetActive(true);
+        }
+        
+        itemsPerCategory.Clear();
+
+        for (int i = 0; i < categoryNumber; i++)
+        {
+            int randomItemCount = Random.Range(2, 16);
+            itemsPerCategory.Add(randomItemCount);
+        }
+        Debug.Log(categoryNumber);
+        Debug.Log($"Categories : {categoryNumber}, Items par catégorie : {string.Join(", ", itemsPerCategory)}");
+
         canClick = true;
         InOutElasticY.OnFinishMotionElastic += HandleCheckCanClick;
+        
+        AssignRandomIngredients();
+    }
+
+    private void Start()
+    {
+        if (!inputActionManager) inputActionManager = InputActionManager.Instance;
+        playerInputAction = inputActionManager.GetPlayerInputAction();
     }
 
     private void HandleCheckCanClick(bool _canClick)
     {
         canClick = _canClick;
     }
-
-    private void Start()
+    
+    private void AssignRandomIngredients()
     {
+        List<List<IngredientCreator>> availableIngredientsByCategory = cpyIngredients
+            .Select(c => new List<IngredientCreator>(c.ingredient))
+            .ToList();
+
+        List<List<RawImage>> availableRawImagesByCategory = cpyRawImages
+            .Select(c => new List<RawImage>(c.rawImage))
+            .ToList();
+
+        for (int i = 0; i < categoryNumber; i++)
+        {
+            ContentClosetIngredient newIngredientCategory = new ContentClosetIngredient
+            {
+                ingredient = new List<IngredientCreator>(),
+                maxSlot = itemsPerCategory[i],
+                actualSlotUsed = 0
+            };
+
+            ContentClosetIngredientSprite newRawImageCategory = new ContentClosetIngredientSprite
+            {
+                rawImage = new List<RawImage>()
+            };
+
+            for (int j = 0; j < itemsPerCategory[i]; j++)
+            {
+                if (availableIngredientsByCategory[i].Count > 0 && availableRawImagesByCategory[i].Count > 0)
+                {
+                    int ingredientIndex = Random.Range(0, availableIngredientsByCategory[i].Count);
+                    int rawImageIndex = ingredientIndex;
+
+                    newIngredientCategory.ingredient.Add(availableIngredientsByCategory[i][ingredientIndex]);
+                    newRawImageCategory.rawImage.Add(availableRawImagesByCategory[i][rawImageIndex]);
+
+                    availableIngredientsByCategory[i].RemoveAt(ingredientIndex);
+                    availableRawImagesByCategory[i].RemoveAt(rawImageIndex);
+
+                    newIngredientCategory.actualSlotUsed++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            ingredients.Add(newIngredientCategory);
+            rawImages.Add(newRawImageCategory);
+        }
+
         InitItemPanel();
+    }
+
+    private void ResetData()
+    {
+        foreach (Transform tab in listTab)
+        {
+            for( int i = 0; i < tab.childCount; ++i )
+            {
+                tab.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        foreach (var closetSingle in closet)
+        {
+            closetSingle.SetActive(false);
+        }
+        ingredients.Clear();
+        rawImages.Clear();
     }
 
     private void InitItemPanel()
@@ -76,6 +183,10 @@ public class ContentCloset : MonoBehaviour
                     ingredients[i].actualSlotUsed = j+1;
                     rawImages[i].rawImage[j].gameObject.SetActive(true);
                     rawImages[i].rawImage[j].texture = ingredients[i].ingredient[j].icon;
+                }
+                else
+                {
+                    rawImages[i].rawImage[j].gameObject.SetActive(false);
                 }
             }
         }
@@ -101,7 +212,7 @@ public class ContentCloset : MonoBehaviour
         {
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].actualSlotUsed != ingredients[i].maxSlot)
+                if (ingredients[i].actualSlotUsed < 19)
                 {
                     for (int j = 0; j < ingredients[i].ingredient.Count; j++)
                     {
@@ -111,6 +222,7 @@ public class ContentCloset : MonoBehaviour
                             rawImages[i].rawImage[j].texture = stockGameObjectForDrop.GetComponent<Item>().GetIngredientCreator().icon;
                             ingredients[i].ingredient[j] = stockGameObjectForDrop.GetComponent<Item>().GetIngredientCreator();
                             ingredients[i].actualSlotUsed++;
+                            OnShowNotificationFunc?.Invoke("Vous venez de déposer : " + ingredients[i].ingredient[j].name);
                             Destroy(stockGameObjectForDrop);
                         }
                     }
@@ -125,6 +237,7 @@ public class ContentCloset : MonoBehaviour
         {
             ShowCheckIcon(selectedCheck);
             OnSelectedHand?.Invoke(handName, currentObj);
+            OnShowNotificationFunc?.Invoke("Vous avez pris " + currentObj.name);
             RemoveItemFromCloset();
         }
     }
@@ -159,6 +272,7 @@ public class ContentCloset : MonoBehaviour
 
     public void HiddeCloset()
     {
+        playerInputAction.Player.Enable();
         this.gameObject.SetActive(false);
     }
     
@@ -167,6 +281,10 @@ public class ContentCloset : MonoBehaviour
         if (canClick)
         {
             ShowCheckIcon(newSelectedCheck);
+        }
+        else
+        {
+            OnShowNotificationFunc?.Invoke("Veuillez attendre afin de pouvoir choisir un nouvel ingrédient.");
         }
     }
 
@@ -187,6 +305,7 @@ public class ContentCloset : MonoBehaviour
         placard.layer = LayerMask.NameToLayer("Closet");
         canClick = true;
         switchActivePanelInfo = false;
+        ResetData();
     }
 
     public void SetTextDescriptionItem()

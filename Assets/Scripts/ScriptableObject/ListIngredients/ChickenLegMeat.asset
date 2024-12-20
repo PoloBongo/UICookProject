@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ChickenLegMeat
   m_EditorClassIdentifier: 
   prefab: {fileID: 9058849866393672627, guid: a81a5789c72593e48af2d8d37e6b4933, type: 3}
+  meshCuit: {fileID: -3820122872164852405, guid: 367bab942037468409d91209a6d73770, type: 3}
   icon: {fileID: 2800000, guid: aafb8be12438d114e8e5ea89b4b9de25, type: 3}
   name: Chicken Leg Meat
-  description: Adds a touch of flavor
+  description: Chicken leg meat is tender, flavorful dark meat, ideal for grilling,
+    roasting, or adding to hearty dishes.
